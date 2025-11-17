@@ -19,12 +19,12 @@ export const findBusinessesWithoutWebsite = async (
     location: GeolocationCoordinates
 ): Promise<Business[]> => {
     const prompt = `
-      Using Google Maps data, find '${businessType}' near the user's location (${location.latitude}, ${location.longitude}) that DO NOT have a website listed.
-      For each business found, provide its name, full address, phone number (if available), and the direct Google Maps URL.
+      Using Google Maps data, find '${businessType}' near the user's location (${location.latitude}, ${location.longitude}).
+      For each business found, provide its name, full address, phone number (if available), the direct Google Maps URL, and its website URL if it has one.
       Return the results as a valid JSON array of objects.
-      Each object must have the following keys: "name", "address", "phone", and "mapsUrl".
-      If a phone number is not available, set its value to null.
-      If no businesses are found that meet the criteria, return an empty JSON array.
+      Each object must have the following keys: "name", "address", "phone", "mapsUrl", and "website".
+      If a phone number or website is not available for a business, set its value to null.
+      If no businesses are found, return an empty JSON array.
       Do not include any explanatory text or markdown formatting outside of the JSON array itself.
     `;
 
@@ -54,8 +54,13 @@ export const findBusinessesWithoutWebsite = async (
         const parsedResult = JSON.parse(jsonString);
 
         if (Array.isArray(parsedResult)) {
-            // Basic validation
-            return parsedResult.filter(item => item && typeof item.name === 'string' && typeof item.address === 'string');
+            // Explicitly type the result from parsing
+            const allBusinesses: Business[] = parsedResult;
+
+            // Filter out businesses that have a website. A website value of null, undefined, or "" is considered as no website.
+            const businessesWithoutWebsite = allBusinesses.filter(business => !business.website);
+            
+            return businessesWithoutWebsite;
         }
 
         throw new Error("Invalid response format from API. Expected a JSON array.");

@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Website-less Business Finder",
+  "description": "An intelligent tool that uses Google Maps data to find local businesses that don't have a website, helping you discover hidden gems or identify potential clients.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
